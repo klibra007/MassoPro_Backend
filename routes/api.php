@@ -15,7 +15,11 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::apiResource('services', ServiceController::class);
+
+// ->only (permet de spécifier les méthodes autorisées par cette route qui se trouve dans la classe controller correspondante)
+Route::apiResource('services', ServiceController::class)->only([
+    'index', 'show'
+]);
 Route::apiResource('utilisateurs', UtilisateurController::class);
 //
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
