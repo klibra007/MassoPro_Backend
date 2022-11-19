@@ -48,14 +48,14 @@ class ServicePersonnelController extends Controller
     public function show($idService)
     {
         $personnels = Service_Personnel::join('personnel', 'service_personnel.idPersonnel', '=', 'personnel.id')
-        ->join('utilisateur', 'personnel.idUtilisateur', '=', 'utilisateur.id')
-        ->where('service_personnel.idService', '=', $idService)
-        ->where('personnel.typePersonnel', '=', 'Massothérapeute')
-        ->select('personnel.id', 'utilisateur.prenom', 'utilisateur.nom')
-        ->get();
-    	return response()->json([
+            ->join('utilisateur', 'personnel.idUtilisateur', '=', 'utilisateur.id')
+            ->where('service_personnel.idService', '=', $idService)
+            ->where('personnel.typePersonnel', '=', 'Massothérapeute')
+            ->select('personnel.id', 'utilisateur.prenom', 'utilisateur.nom')
+            ->get();
+        return response()->json([
             'personnels' => $personnels
-            ]);   
+        ]);
     }
 
     /**
