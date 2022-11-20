@@ -83,13 +83,13 @@ class RendezVousController extends Controller
             $tranchesHoraires = array();
             foreach ($horaires as $value) {
                 $tranchesHoraires = getTimeSlots($duree->duree, $value->heureDebut, $value->heureFin, $tranchesHoraires);
+                /*
+                * Vérification du dernier élément généré (bug: exemple si la durée est de 1 heure et que la plage horaire se termine à 16:30, il va générer 1 entrée de 16h00 à 16h30)
+                */
+                $verif1 = new DateTime($tranchesHoraires[count($tranchesHoraires) - 1]['heureDebut']);
+                $verif2 = new DateTime($tranchesHoraires[count($tranchesHoraires) - 1]['heureFin']);
+                if ($verif1->diff($verif2)->format('%i') < $duree->duree) array_pop($tranchesHoraires);
             }
-            /*
-            * Vérification du dernier élément généré (bug: exemple si la durée est de 1 heure et que la plage horaire se termine à 16:30, il va générer 1 entrée de 16h00 à 16h30)
-            */
-            $verif1 = new DateTime($tranchesHoraires[count($tranchesHoraires) - 1]['heureDebut']);
-            $verif2 = new DateTime($tranchesHoraires[count($tranchesHoraires) - 1]['heureFin']);
-            if ($verif1->diff($verif2)->format('%i') < $duree->duree) array_pop($tranchesHoraires);
             /*
             * Vérification des rendez-vous déjà présents pour cette date de ce personnel et de ce service passé dans la request
             * Va aussi vérifier si le personnel a posé un horaire de non disponibilité pour cette journée (dans la table rendezVous, idClient à null)
