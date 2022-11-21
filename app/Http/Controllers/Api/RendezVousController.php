@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Duree;
 use App\Models\HoraireDeTravail;
 use App\Models\RendezVous;
+use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use DateTime;
@@ -47,6 +48,54 @@ class RendezVousController extends Controller
             $duree = Duree::where('id', '=', $request->idDuree)
                 ->select('duree')
                 ->first();
+            /*
+            * Nouvelle approche avec Carbon, bug ici si la plage horaire commence à la même heure qu'un horaire invalide...
+            * Exemple pris là https://stackoverflow.com/questions/74068073/laravel-carbon-get-interval-slots-with-buffer-duration
+            */
+            /*$serviceDuration = 40; // 40 minutes slots duration
+            $serviceBufferDuration = 5; // 5 minutes buffer time between slots
+            $invalidTimeIntervals = ['09:00 - 10:00', '12:10 - 12:30']; // invalid time intervals
+            $startWorking = "09:00";
+            $endWorking =  "13:30";
+            
+            $start_time = Carbon::parse($startWorking);
+            $end_time = Carbon::parse($endWorking);
+
+            $times = [];
+
+            $loop = true;
+            while ($loop) {
+
+                foreach ($invalidTimeIntervals as $interval) {
+                    $invalidTime = explode(' - ', $interval);
+                    $invalidTime[0] = Carbon::parse($invalidTime[0]);
+                    $invalidTime[1] = Carbon::parse($invalidTime[1]);
+
+                    $slot_time = $start_time->copy()->addMinutes($serviceDuration);
+
+                    if (
+                        $start_time->lessThan($invalidTime[0])
+                        && ($slot_time->greaterThan($invalidTime[1])
+                            || $slot_time->between($invalidTime[0], $invalidTime[1])
+                        )
+                    ) {
+                        $start_time = Carbon::parse($invalidTime[1]);
+                    }
+                }
+
+                $slot_time = $start_time->copy()->addMinutes($serviceDuration);
+
+                if ($slot_time->lessThanOrEqualTo($end_time)) {
+                    $times[] =  $start_time->format('H:i') . ' - ' . $slot_time->format('H:i');
+                    $start_time = $slot_time->addMinutes($serviceBufferDuration);
+                    continue;
+                }
+
+                $loop = false;
+            }
+
+            print_r($times);*/
+
             /*
             * Fonction qui va générer toutes les plages horaires
             */

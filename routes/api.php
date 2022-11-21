@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DureeController;
 use App\Http\Controllers\Api\RendezVousController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\ServicePersonnelController;
-use App\Http\Controllers\Api\UtilisateurController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +23,10 @@ use Illuminate\Support\Facades\Route;
 Route::apiResource('services', ServiceController::class)->only([
     'index', 'show'
 ]);
-Route::apiResource('utilisateurs', UtilisateurController::class);
+// Fonctionnalités temporaires, seront à transformer pour utiliser le package sanctum de laravel lors du srpint 2
+Route::post('/auth/login', [AuthController::class, 'loginUser']);
+Route::post('/auth/register', [AuthController::class, 'createUser']);
+//
 Route::apiResource('durees', DureeController::class);
 Route::apiResource('servicespersonnels', ServicePersonnelController::class);
 Route::apiResource('rendezvous', RendezVousController::class);
