@@ -55,6 +55,8 @@ class AuthController extends Controller
                 'notes' => '',
                 'dateDeNaissance' => '1980-01-01',
                 'numeroAssuranceMaladie' => '0000000000',
+                'contactParSMS' => $request->contactParSMS,
+                'contactParCourriel' => $request->contactParCourriel,
                 'idUtilisateur' => $idUtilisateur
             ]);
             // Récupération de l'id du client qui vient d'être inséré

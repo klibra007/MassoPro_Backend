@@ -24,7 +24,9 @@ class Utilisateur extends Authenticatable
         'prenom',
         'courriel',
         'motDePasse',
-        'telephone'
+        'telephone',
+        'contactParSMS',
+        'contactParCourriel'
     ];
 
     /**
