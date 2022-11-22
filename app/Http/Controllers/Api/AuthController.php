@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -42,9 +44,8 @@ class AuthController extends Controller
                 'nom' => $request->nom,
                 'prenom' => $request->prenom,
                 'courriel' => $request->courriel,
-                'motDePasse' => $request->motDePasse,
+                'motDePasse' => Hash::make($request->motDePasse),
                 'telephone' => $request->telephone
-                //'password' => Hash::make($request->password)
             ]);
             // Récupération de l'id de l'utilisateur qui vient d'être inséré
             $idUtilisateur = $utilisateur->id;
@@ -55,7 +56,6 @@ class AuthController extends Controller
                 'dateDeNaissance' => '1980-01-01',
                 'numeroAssuranceMaladie' => '0000000000',
                 'idUtilisateur' => $idUtilisateur
-                //'password' => Hash::make($request->password)
             ]);
             // Récupération de l'id du client qui vient d'être inséré
             $idClient = $client->id;
@@ -63,10 +63,10 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'User Created Successfully',
-                'idClient' => $idClient
-                //'token' => $user->createToken("API TOKEN")->plainTextToken
+                'idClient' => $idClient,
+                //'token' => $utilisateur->createToken("API TOKEN")->plainTextToken
             ], 200);
-
+            
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -98,7 +98,7 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            /*if(!Auth::attempt($request->only(['email', 'password']))){
+            /*if (!Auth::attempt($request->only(['courriel', 'motDePasse']))) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password does not match with our record.',
@@ -113,8 +113,8 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'User Logged In Successfully',
-                'idClient' => $utilisateur->idClient
-                //'token' => $user->createToken("API TOKEN")->plainTextToken
+                'idClient' => $utilisateur->idClient,
+                //'token' => $utilisateur->createToken("API TOKEN")->plainTextToken
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

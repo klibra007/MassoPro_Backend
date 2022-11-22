@@ -16,10 +16,12 @@ class CreateUtilisateurTable extends Migration
         if (!Schema::hasTable('utilisateur')) {
             Schema::create('utilisateur', function (Blueprint $table) {
                 $table->integer('id')->primary();
-                $table->string('nom', 50);
-                $table->string('prenom', 50);
-                $table->string('courriel', 50);
-                $table->string('motDePasse', 50);
+                $table->string('nom');
+                $table->string('prenom');
+                $table->string('courriel')->unique();
+                $table->timestamp('email_verified_at')->nullable();
+                $table->string('motDePasse');
+                $table->rememberToken();
                 $table->string('telephone', 15);
                 $table->timestamps();
             });
