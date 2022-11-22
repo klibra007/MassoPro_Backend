@@ -205,6 +205,27 @@ class RendezVousController extends Controller
                 */
                 return response()->json($tranchesHoraires);
             }
+        } else {
+            try {
+                $reservations = RendezVous::join('personnel', 'rendezVous.idPersonnel', 'personnel.id')
+                    ->join('utilisateur', 'personnel.idUtilisateur', 'utilisateur.id')
+                    ->join('service', 'rendezVous.idService', 'service.id')
+                    ->join('duree', 'rendezVous.idDuree', 'duree.id')
+                    ->where('rendezVous.idClient', $request->idClient)
+                    ->where('rendezVous.etat', 1)
+                    ->select('rendezVous.*', 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix')
+                    ->get();
+
+                return response()->json([
+                    'status' => true,
+                    'reservations' => $reservations
+                ], 200);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $th->getMessage()
+                ], 500);
+            }
         }
     }
 
@@ -261,7 +282,7 @@ class RendezVousController extends Controller
                     'message' => 'Le rendez-vous existe déjà.'
                 ], 401);
             }
-            
+
             // Numéro de réservation
             $reservation = random_int(100000000, 999999999);
 
@@ -292,13 +313,30 @@ class RendezVousController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\RendezVous  $rendezVous
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show($id)
     {
-        //
+        try {
+            $reservation = RendezVous::join('personnel', 'rendezVous.idPersonnel', 'personnel.id')
+                ->join('utilisateur', 'personnel.idUtilisateur', 'utilisateur.id')
+                ->join('service', 'rendezVous.idService', 'service.id')
+                ->join('duree', 'rendezVous.idDuree', 'duree.id')
+                ->where('rendezVous.id', $id)
+                ->select('rendezVous.*', 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'reservation' => $reservation
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
