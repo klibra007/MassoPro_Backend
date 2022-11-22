@@ -44,7 +44,7 @@ class AuthController extends Controller
                 'nom' => $request->nom,
                 'prenom' => $request->prenom,
                 'courriel' => $request->courriel,
-                'motDePasse' => Hash::make($request->motDePasse),
+                'motDePasse' => $request->motDePasse, //Hash::make($request->motDePasse),
                 'telephone' => $request->telephone
             ]);
             // Récupération de l'id de l'utilisateur qui vient d'être inséré

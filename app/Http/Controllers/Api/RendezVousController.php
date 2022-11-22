@@ -11,6 +11,7 @@ use DateInterval;
 use DatePeriod;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RendezVousController extends Controller
 {
@@ -225,7 +226,67 @@ class RendezVousController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            //Validated
+            $validateRDV = Validator::make(
+                $request->all(),
+                [
+                    'date' => 'required|date',
+                    'heureDebut' => 'required',
+                    'heureFin' => 'required',
+                    'idService' => 'required|integer|exists:service,id',
+                    'idPersonnel' => 'required|integer|exists:personnel,id'
+                ]
+            );
+
+            if ($validateRDV->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validateRDV->errors()
+                ], 401);
+            }
+
+            if (RendezVous::where('date', $request->date)
+                ->where('heureDebut', $request->heureDebut)
+                ->where('heureFin', $request->heureFin)
+                ->where('etat', 1)
+                ->where('idService', $request->idService)
+                ->where('idClient', $request->idClient)
+                ->where('idPersonnel', $request->idPersonnel)
+                ->exists()
+            ) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Le rendez-vous existe déjà.'
+                ], 401);
+            }
+            
+            // Numéro de réservation
+            $reservation = random_int(100000000, 999999999);
+
+            $rendezVous = RendezVous::create([
+                'date' => $request->date,
+                'heureDebut' => $request->heureDebut,
+                'heureFin' => $request->heureFin,
+                'etat' => '1',
+                'reservation' => $reservation,
+                'idService' => $request->idService,
+                'idClient' => $request->idClient,
+                'idPersonnel' => $request->idPersonnel
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'reservation' => $reservation,
+                'message' => 'Rendez-vous créé avec succès.'
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
