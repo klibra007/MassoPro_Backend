@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\DureeController;
 use App\Http\Controllers\Api\RendezVousController;
 use App\Http\Controllers\Api\ServiceController;
@@ -30,6 +31,7 @@ Route::post('/auth/register', [AuthController::class, 'createUser']);
 Route::apiResource('durees', DureeController::class);
 Route::apiResource('servicespersonnels', ServicePersonnelController::class);
 Route::apiResource('rendezvous', RendezVousController::class); //->middleware('auth:sanctum');
+Route::apiResource('client', ClientController::class); //->middleware('auth:sanctum');
 //
 /*Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
