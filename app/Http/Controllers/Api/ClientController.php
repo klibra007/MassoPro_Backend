@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
@@ -97,7 +98,7 @@ class ClientController extends Controller
                 if ($request->nom != null) $utilisateur->nom = $request->nom;
                 if ($request->prenom != null) $utilisateur->prenom = $request->prenom;
                 if ($request->courriel != null) $utilisateur->courriel = $request->courriel;
-                if ($request->motDePasse != null) $utilisateur->motDePasse = $request->motDePasse; //Hash::make($request->motDePasse),
+                if ($request->motDePasse != null) $utilisateur->motDePasse = Hash::make($request->motDePasse);
                 if ($request->telephone != null) $utilisateur->telephone = $request->telephone;
 
                 $utilisateur->save();
