@@ -44,7 +44,8 @@ class AuthController extends Controller
                 'nom' => $request->nom,
                 'prenom' => $request->prenom,
                 'courriel' => $request->courriel,
-                'motDePasse' => $request->motDePasse, //Hash::make($request->motDePasse),
+                //'motDePasse' => $request->motDePasse, //Hash::make($request->motDePasse),
+                'motDePasse' => Hash::make($request->motDePasse),
                 'telephone' => $request->telephone
             ]);
             // Récupération de l'id de l'utilisateur qui vient d'être inséré
@@ -66,9 +67,8 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'User Created Successfully',
                 'idClient' => $idClient,
-                //'token' => $utilisateur->createToken("API TOKEN")->plainTextToken
+                'token' => $utilisateur->createToken("API TOKEN")->plainTextToken
             ], 200);
-            
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -100,23 +100,27 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            /*if (!Auth::attempt($request->only(['courriel', 'motDePasse']))) {
+            $utilisateur = Utilisateur::join('client', 'utilisateur.id', 'client.idUtilisateur')
+                ->where('courriel', $request->courriel)
+                ->select('client.id AS idClient', 'utilisateur.*')
+                ->first();
+            //
+            if (!$utilisateur || !Hash::check($request->motDePasse, $utilisateur->motDePasse))
+            /*if (!Auth::attempt($request->validate([
+                'courriel' => ['required', 'email'],
+                'motDePasse' => ['required']
+            ])))*/ {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password does not match with our record.',
                 ], 401);
-            }*/
-
-            $utilisateur = Utilisateur::join('client', 'utilisateur.id', '=', 'client.idUtilisateur')
-                ->where('courriel', $request->courriel)
-                ->select('client.id AS idClient')
-                ->first();
+            }
 
             return response()->json([
                 'status' => true,
                 'message' => 'User Logged In Successfully',
                 'idClient' => $utilisateur->idClient,
-                //'token' => $utilisateur->createToken("API TOKEN")->plainTextToken
+                'token' => $utilisateur->createToken("API TOKEN")->plainTextToken
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
