@@ -15,10 +15,10 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::all();
-    	return response()->json([
-        'services' => $services
-    	]);
+        $services = Service::where('estActif', 1)
+            ->select('id', 'nomService', 'description')
+            ->get();
+        return response()->json($services);
     }
 
     /**
@@ -52,9 +52,7 @@ class ServiceController extends Controller
     public function show($id)
     {
         $service = Service::find($id);
-    	return response()->json([
-            'service' => $service
-            ]);        
+        return response()->json($service);
     }
 
     /**

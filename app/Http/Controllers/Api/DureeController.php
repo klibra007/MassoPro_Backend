@@ -48,9 +48,7 @@ class DureeController extends Controller
     public function show($idService)
     {
         $durees = Duree::where('idService', '=', $idService)->get();
-        return response()->json([
-            'service' => $durees
-        ]);
+        return response()->json($durees);
     }
 
     /**

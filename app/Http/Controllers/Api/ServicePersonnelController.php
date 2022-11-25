@@ -53,9 +53,7 @@ class ServicePersonnelController extends Controller
             ->where('personnel.typePersonnel', '=', 'Massothérapeute')
             ->select('personnel.id', 'utilisateur.prenom', 'utilisateur.nom')
             ->get();
-        return response()->json([
-            'personnels' => $personnels
-        ]);
+        return response()->json($personnels);
     }
 
     /**
