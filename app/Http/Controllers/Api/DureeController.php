@@ -47,7 +47,9 @@ class DureeController extends Controller
      */
     public function show($idService)
     {
-        $durees = Duree::where('idService', '=', $idService)->get();
+        $durees = Duree::where('idService', '=', $idService)
+            ->select('id', 'duree', 'prix', 'idService')
+            ->get();
         return response()->json($durees);
     }
 

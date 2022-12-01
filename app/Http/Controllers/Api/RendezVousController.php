@@ -256,6 +256,7 @@ class RendezVousController extends Controller
                     'heureDebut' => 'required',
                     'heureFin' => 'required',
                     'idService' => 'required|integer|exists:service,id',
+                    'idDuree' => 'required|integer|exists:duree,id',
                     'idPersonnel' => 'required|integer|exists:personnel,id'
                 ]
             );
@@ -273,6 +274,7 @@ class RendezVousController extends Controller
                 ->where('heureFin', $request->heureFin)
                 ->where('etat', 1)
                 ->where('idService', $request->idService)
+                ->where('idDuree', $request->idDuree)
                 ->where('idClient', $request->idClient)
                 ->where('idPersonnel', $request->idPersonnel)
                 ->exists()
@@ -293,6 +295,7 @@ class RendezVousController extends Controller
                 'etat' => '1',
                 'reservation' => $reservation,
                 'idService' => $request->idService,
+                'idDuree' => $request->idDuree,
                 'idClient' => $request->idClient,
                 'idPersonnel' => $request->idPersonnel
             ]);
