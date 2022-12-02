@@ -100,12 +100,14 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $utilisateur = Utilisateur::join('client', 'utilisateur.id', 'client.idUtilisateur')
-                ->where('courriel', $request->courriel)
-                ->select('client.id AS idClient', 'utilisateur.*')
+            $typeUtilisateur = Utilisateur::leftJoin('personnel', 'utilisateur.id', 'personnel.idUtilisateur')
+                ->leftJoin('administrateur', 'utilisateur.id', 'administrateur.idUtilisateur')
+                ->leftJoin('client', 'utilisateur.id', 'client.idUtilisateur')
+                ->where('utilisateur.courriel', $request->courriel)
+                ->select('utilisateur.id', 'utilisateur.motDePasse', 'personnel.id AS idPersonnel', 'personnel.estActif AS personnelEstActif', 'administrateur.id AS idAdministrateur', 'client.id AS idClient', 'client.estActif AS clientEstActif')
                 ->first();
             //
-            if (!$utilisateur || !Hash::check($request->motDePasse, $utilisateur->motDePasse))
+            if (!$typeUtilisateur || !Hash::check($request->motDePasse, $typeUtilisateur->motDePasse))
             /*if (!Auth::attempt($request->validate([
                 'courriel' => ['required', 'email'],
                 'motDePasse' => ['required']
@@ -116,10 +118,16 @@ class AuthController extends Controller
                 ], 401);
             }
 
+            $utilisateur = Utilisateur::where('id', $typeUtilisateur->id)->first();
+
             return response()->json([
                 'status' => true,
                 'message' => 'User Logged In Successfully',
-                'idClient' => $utilisateur->idClient,
+                'idClient' => $typeUtilisateur->idClient,
+                'idPersonnel' => $typeUtilisateur->idPersonnel,
+                'idAdministrateur' => $typeUtilisateur->idAdministrateur,
+                'personnelEstActif' => $typeUtilisateur->personnelEstActif,
+                'clientEstActif' => $typeUtilisateur->clientEstActif,
                 'token' => $utilisateur->createToken("API TOKEN")->plainTextToken
             ], 200);
         } catch (\Throwable $th) {
