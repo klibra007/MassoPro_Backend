@@ -104,7 +104,7 @@ class AuthController extends Controller
                 ->leftJoin('administrateur', 'utilisateur.id', 'administrateur.idUtilisateur')
                 ->leftJoin('client', 'utilisateur.id', 'client.idUtilisateur')
                 ->where('utilisateur.courriel', $request->courriel)
-                ->select('utilisateur.id', 'utilisateur.motDePasse', 'utilisateur.prenom', 'urilisateur.nom', 'personnel.id AS idPersonnel', 'personnel.estActif AS personnelEstActif', 'administrateur.id AS idAdministrateur', 'client.id AS idClient', 'client.estActif AS clientEstActif')
+                ->select('utilisateur.id', 'utilisateur.motDePasse', 'utilisateur.prenom', 'utilisateur.nom', 'personnel.id AS idPersonnel', 'personnel.estActif AS personnelEstActif', 'administrateur.id AS idAdministrateur', 'client.id AS idClient', 'client.estActif AS clientEstActif')
                 ->first();
             //
             if (!$typeUtilisateur || !Hash::check($request->motDePasse, $typeUtilisateur->motDePasse))
