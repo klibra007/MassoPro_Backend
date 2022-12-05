@@ -37,7 +37,7 @@ class AuthController extends Controller
                     'status' => false,
                     'message' => 'validation error',
                     'errors' => $validateUser->errors()
-                ], 401);
+                ], 200);
             }
 
             $utilisateur = Utilisateur::create([
@@ -97,14 +97,14 @@ class AuthController extends Controller
                     'status' => false,
                     'message' => 'validation error',
                     'errors' => $validateUser->errors()
-                ], 401);
+                ], 200);
             }
 
             $typeUtilisateur = Utilisateur::leftJoin('personnel', 'utilisateur.id', 'personnel.idUtilisateur')
                 ->leftJoin('administrateur', 'utilisateur.id', 'administrateur.idUtilisateur')
                 ->leftJoin('client', 'utilisateur.id', 'client.idUtilisateur')
                 ->where('utilisateur.courriel', $request->courriel)
-                ->select('utilisateur.id', 'utilisateur.motDePasse', 'personnel.id AS idPersonnel', 'personnel.estActif AS personnelEstActif', 'administrateur.id AS idAdministrateur', 'client.id AS idClient', 'client.estActif AS clientEstActif')
+                ->select('utilisateur.id', 'utilisateur.motDePasse', 'utilisateur.prenom', 'urilisateur.nom', 'personnel.id AS idPersonnel', 'personnel.estActif AS personnelEstActif', 'administrateur.id AS idAdministrateur', 'client.id AS idClient', 'client.estActif AS clientEstActif')
                 ->first();
             //
             if (!$typeUtilisateur || !Hash::check($request->motDePasse, $typeUtilisateur->motDePasse))
@@ -115,7 +115,7 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password does not match with our record.',
-                ], 401);
+                ], 200);
             }
 
             $utilisateur = Utilisateur::where('id', $typeUtilisateur->id)->first();
@@ -124,6 +124,8 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'User Logged In Successfully',
                 'idClient' => $typeUtilisateur->idClient,
+                'prenom' => $typeUtilisateur->prenom,
+                'nom' => $typeUtilisateur->nom,
                 'idPersonnel' => $typeUtilisateur->idPersonnel,
                 'idAdministrateur' => $typeUtilisateur->idAdministrateur,
                 'personnelEstActif' => $typeUtilisateur->personnelEstActif,
