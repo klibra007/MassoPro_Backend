@@ -107,16 +107,16 @@ class AuthController extends Controller
                 ->select('utilisateur.id', 'utilisateur.motDePasse', 'utilisateur.prenom', 'utilisateur.nom', 'personnel.id AS idPersonnel', 'personnel.estActif AS personnelEstActif', 'personnel.typePersonnel', 'administrateur.id AS idAdministrateur', 'client.id AS idClient', 'client.estActif AS clientEstActif')
                 ->first();
             //
-            if (!$typeUtilisateur || !Hash::check($request->motDePasse, $typeUtilisateur->motDePasse))
+            /*if (!$typeUtilisateur || !Hash::check($request->motDePasse, $typeUtilisateur->motDePasse))
             /*if (!Auth::attempt($request->validate([
                 'courriel' => ['required', 'email'],
                 'motDePasse' => ['required']
-            ])))*/ {
+            ]))) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password does not match with our record.',
                 ], 401);
-            }
+            }*/
 
             $utilisateur = Utilisateur::where('id', $typeUtilisateur->id)->first();
 
