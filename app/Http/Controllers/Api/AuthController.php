@@ -37,7 +37,7 @@ class AuthController extends Controller
                     'status' => false,
                     'message' => 'validation error',
                     'errors' => $validateUser->errors()
-                ], 200);
+                ], 401);
             }
 
             $utilisateur = Utilisateur::create([
@@ -97,7 +97,7 @@ class AuthController extends Controller
                     'status' => false,
                     'message' => 'validation error',
                     'errors' => $validateUser->errors()
-                ], 200);
+                ], 401);
             }
 
             $typeUtilisateur = Utilisateur::leftJoin('personnel', 'utilisateur.id', 'personnel.idUtilisateur')
