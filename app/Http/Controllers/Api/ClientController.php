@@ -48,9 +48,45 @@ class ClientController extends Controller
      * @param  \App\Models\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function show(Client $client)
+    public function show($id)
     {
-        //
+        try {
+            if (Client::find($id)->exists()) {
+
+                $client = Client::join('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
+                    ->where('client.id', $id)
+                    ->select('utilisateur.prenom', 'utilisateur.nom', 'utilisateur.courriel', 'utilisateur.telephone', 'client.id AS idClient', 'client.estActif', 'client.dateDeNaissance', 'client.numeroAssuranceMaladie', 'client.contactParSMS', 'client.contactParCourriel')
+                    ->get();
+                if (!$client->estActif) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Ce client n\'est plus actif.'
+                    ], 401);
+                }
+                return response()->json([
+                    'status' => true,
+                    'idClient' => $client->idClient,
+                    'prenom' => $client->prenom,
+                    'nom' => $client->nom,
+                    'courriel' => $client->courriel,
+                    'telephone' => $client->telephone,
+                    'dateDeNaissance' => $client->dateDeNaissance,
+                    'numeroAssuranceMaladie' => $client->numeroAssuranceMaladie,
+                    'contactParSMS' => $client->contactParSMS,
+                    'contactParCourriel' => $client->contactParCourriel
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ce client n\'existe pas.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -91,7 +127,7 @@ class ClientController extends Controller
                         'errors' => $validateClient->errors()
                     ], 401);
                 }
-    
+
                 $client = Client::find($id);
                 $utilisateur = Utilisateur::find($client->idUtilisateur);
 
@@ -123,7 +159,7 @@ class ClientController extends Controller
                 'status' => false,
                 'message' => $th->getMessage()
             ], 500);
-        }        //
+        }
     }
 
     /**

@@ -32,6 +32,14 @@ Route::apiResource('durees', DureeController::class);
 Route::apiResource('servicespersonnels', ServicePersonnelController::class);
 Route::apiResource('rendezvous', RendezVousController::class); //->middleware('auth:sanctum');
 Route::apiResource('client', ClientController::class); //->middleware('auth:sanctum');
+
+//using middleware AuthController
+/*Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/profile', function(Request $request) {
+        return auth()->user();
+    });
+    Route::post('/sign-out', [AuthenticationController::class, 'logout']);
+});
 //
 /*Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
