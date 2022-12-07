@@ -126,7 +126,9 @@ class ClientController extends Controller
                 if ($request->nom != null) $utilisateur->nom = $request->nom;
                 if ($request->prenom != null) $utilisateur->prenom = $request->prenom;
                 if ($request->courriel != null) $utilisateur->courriel = $request->courriel;
-                if ($request->motDePasse != null) $utilisateur->motDePasse = Hash::make($request->motDePasse);
+                // À remettre lorsque le bug sur le hash aura été résolu
+                //if ($request->motDePasse != null) $utilisateur->motDePasse = Hash::make($request->motDePasse);
+                if ($request->motDePasse != null) $utilisateur->motDePasse = $request->motDePasse;
                 if ($request->telephone != null) $utilisateur->telephone = $request->telephone;
 
                 $utilisateur->save();

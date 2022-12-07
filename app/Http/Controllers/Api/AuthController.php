@@ -44,8 +44,8 @@ class AuthController extends Controller
                 'nom' => $request->nom,
                 'prenom' => $request->prenom,
                 'courriel' => $request->courriel,
-                //'motDePasse' => $request->motDePasse, //Hash::make($request->motDePasse),
-                'motDePasse' => Hash::make($request->motDePasse),
+                'motDePasse' => $request->motDePasse, //Hash::make($request->motDePasse),
+                //'motDePasse' => Hash::make($request->motDePasse),
                 'telephone' => $request->telephone
             ]);
             // Récupération de l'id de l'utilisateur qui vient d'être inséré
@@ -104,19 +104,21 @@ class AuthController extends Controller
                 ->leftJoin('administrateur', 'utilisateur.id', 'administrateur.idUtilisateur')
                 ->leftJoin('client', 'utilisateur.id', 'client.idUtilisateur')
                 ->where('utilisateur.courriel', $request->courriel)
+                ->where('utilisateur.motDePasse', $request->motDePasse) // Sera à enlever lorsque le bug du hash aura été résolu
                 ->select('utilisateur.id', 'utilisateur.motDePasse', 'utilisateur.prenom', 'utilisateur.nom', 'personnel.id AS idPersonnel', 'personnel.estActif AS personnelEstActif', 'personnel.typePersonnel', 'administrateur.id AS idAdministrateur', 'client.id AS idClient', 'client.estActif AS clientEstActif')
                 ->first();
             //
-            /*if (!$typeUtilisateur || !Hash::check($request->motDePasse, $typeUtilisateur->motDePasse))
             /*if (!Auth::attempt($request->validate([
                 'courriel' => ['required', 'email'],
                 'motDePasse' => ['required']
-            ]))) {
+            ])))*/
+            //if (!$typeUtilisateur || !Hash::check($request->motDePasse, $typeUtilisateur->motDePasse)) {
+            if (!$typeUtilisateur) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Email & Password does not match with our record.',
                 ], 401);
-            }*/
+            }
 
             $utilisateur = Utilisateur::where('id', $typeUtilisateur->id)->first();
 
