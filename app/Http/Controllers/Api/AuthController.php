@@ -105,7 +105,7 @@ class AuthController extends Controller
                 ->leftJoin('client', 'utilisateur.id', 'client.idUtilisateur')
                 ->where('utilisateur.courriel', $request->courriel)
                 ->where('utilisateur.motDePasse', $request->motDePasse) // Sera à enlever lorsque le bug du hash aura été résolu
-                ->select('utilisateur.id', 'utilisateur.motDePasse', 'utilisateur.prenom', 'utilisateur.nom', 'personnel.id AS idPersonnel', 'personnel.estActif AS personnelEstActif', 'personnel.typePersonnel', 'administrateur.id AS idAdministrateur', 'client.id AS idClient', 'client.estActif AS clientEstActif')
+                ->select('utilisateur.id', 'utilisateur.motDePasse', 'utilisateur.prenom', 'utilisateur.nom', 'utilisateur.courriel', 'utilisateur.telephone', 'personnel.id AS idPersonnel', 'personnel.estActif AS personnelEstActif', 'personnel.typePersonnel', 'administrateur.id AS idAdministrateur', 'client.id AS idClient', 'client.estActif AS clientEstActif')
                 ->first();
             //
             /*if (!Auth::attempt($request->validate([
@@ -128,6 +128,8 @@ class AuthController extends Controller
                 'idClient' => $typeUtilisateur->idClient,
                 'prenom' => $typeUtilisateur->prenom,
                 'nom' => $typeUtilisateur->nom,
+                'courriel' => $typeUtilisateur->courriel,
+                'telephone' => $typeUtilisateur->telephone,
                 'idPersonnel' => $typeUtilisateur->idPersonnel,
                 'typePersonnel' => $typeUtilisateur->typePersonnel,
                 'idAdministrateur' => $typeUtilisateur->idAdministrateur,
