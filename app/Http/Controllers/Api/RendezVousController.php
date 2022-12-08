@@ -510,7 +510,7 @@ class RendezVousController extends Controller
                     ->join('duree', 'rendezVous.idDuree', 'duree.id')
                     ->where('rendezVous.idClient', $request->idClient)
                     ->where('rendezVous.etat', 1)
-                    ->select('rendezVous.*', 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix')
+                    ->select('rendezVous.*', 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix', 'service.nomService')
                     ->get();
                 if ($reservations->count() > 0) {
                     return response()->json([
