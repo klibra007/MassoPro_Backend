@@ -512,11 +512,17 @@ class RendezVousController extends Controller
                     ->where('rendezVous.etat', 1)
                     ->select('rendezVous.*', 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix')
                     ->get();
-
-                return response()->json([
-                    'status' => true,
-                    'reservations' => $reservations
-                ], 200);
+                if ($reservations->count() > 0) {
+                    return response()->json([
+                        'status' => true,
+                        'reservations' => $reservations
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Aucune réservation pour ce client'
+                    ], 200);
+                }
             } catch (\Throwable $th) {
                 return response()->json([
                     'status' => false,
