@@ -254,7 +254,7 @@ class RendezVousController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->date != null && $request->idService != null && $request->idPersonnel != null && $request->idDuree != null) {
+        if ($request->date != null && $request->idService != null && $request->idPersonnel != null && $request->idDuree != null && $request->heureDebut == null && $request->heureFin == null) {
             /*
             * Vérification des horaires disponibles du personnel
             */
@@ -437,7 +437,7 @@ class RendezVousController extends Controller
                     'message' => 'Aucune disponibilité'
                 ], 200);
             }
-        } elseif ($request->heure != null && $request->heureFin) {
+        } elseif ($request->heureDebut != null && $request->heureFin != null) {
             try {
                 //Validated
                 $validateRDV = Validator::make(
@@ -548,11 +548,17 @@ class RendezVousController extends Controller
                 ->where('rendezVous.id', $id)
                 ->select('rendezVous.*', 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix')
                 ->get();
-
-            return response()->json([
-                'status' => true,
-                'reservation' => $reservation
-            ], 200);
+            if ($reservation->count() > 0) {
+                return response()->json([
+                    'status' => true,
+                    'reservation' => $reservation
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Aucune réservation pour cet id'
+                ], 200);
+            }
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,

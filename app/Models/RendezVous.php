@@ -24,6 +24,7 @@ class RendezVous extends Model
         'reservation',
         'idService',
         'idClient',
+        'idDuree',
         'idPersonnel'
     ];
 }
