@@ -437,7 +437,7 @@ class RendezVousController extends Controller
                     'message' => 'Aucune disponibilité'
                 ], 200);
             }
-        } else {
+        } elseif ($request->heure != null && $request->heureFin) {
             try {
                 //Validated
                 $validateRDV = Validator::make(
@@ -495,6 +495,27 @@ class RendezVousController extends Controller
                     'status' => true,
                     'reservation' => $reservation,
                     'message' => 'Rendez-vous créé avec succès.'
+                ], 200);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $th->getMessage()
+                ], 500);
+            }
+        } else {
+            try {
+                $reservations = RendezVous::join('personnel', 'rendezVous.idPersonnel', 'personnel.id')
+                    ->join('utilisateur', 'personnel.idUtilisateur', 'utilisateur.id')
+                    ->join('service', 'rendezVous.idService', 'service.id')
+                    ->join('duree', 'rendezVous.idDuree', 'duree.id')
+                    ->where('rendezVous.idClient', $request->idClient)
+                    ->where('rendezVous.etat', 1)
+                    ->select('rendezVous.*', 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix')
+                    ->get();
+
+                return response()->json([
+                    'status' => true,
+                    'reservations' => $reservations
                 ], 200);
             } catch (\Throwable $th) {
                 return response()->json([
