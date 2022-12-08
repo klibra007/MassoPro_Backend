@@ -15,7 +15,9 @@ class DureeController extends Controller
      */
     public function index()
     {
-        //
+        $durees = Duree::select('id', 'duree', 'prix')
+            ->get();
+        return response()->json($durees);
     }
 
     /**
@@ -45,11 +47,11 @@ class DureeController extends Controller
      * @param  \App\Models\Duree  $duree
      * @return \Illuminate\Http\Response
      */
-    public function show($idService)
+    public function show($id)
     {
-        $durees = Duree::where('idService', '=', $idService)
-            ->select('id', 'duree', 'prix', 'idService')
-            ->get();
+        $durees = Duree::where('id', '=', $id)
+            ->select('id', 'duree', 'prix')
+            ->first();
         return response()->json($durees);
     }
 
