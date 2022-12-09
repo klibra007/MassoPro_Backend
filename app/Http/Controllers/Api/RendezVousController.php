@@ -11,6 +11,7 @@ use DateInterval;
 use DatePeriod;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class RendezVousController extends Controller
@@ -220,7 +221,7 @@ class RendezVousController extends Controller
                     ->join('duree', 'rendezVous.idDuree', 'duree.id')
                     ->where('rendezVous.idClient', $request->idClient)
                     ->where('rendezVous.etat', 1)
-                    ->select('rendezVous.*', 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix')
+                    ->select('rendezVous.*', DB::raw("DATE_FORMAT(rendezVous.heureDebut, '%H:%i') as heureDebutl"), 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix')
                     ->get();
 
                 return response()->json([
@@ -510,7 +511,7 @@ class RendezVousController extends Controller
                     ->join('duree', 'rendezVous.idDuree', 'duree.id')
                     ->where('rendezVous.idClient', $request->idClient)
                     ->where('rendezVous.etat', 1)
-                    ->select('rendezVous.*', 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix', 'service.nomService')
+                    ->select('rendezVous.*', DB::raw("DATE_FORMAT(rendezVous.heureDebut, '%H:%i') as heureDebut"), DB::raw("DATE_FORMAT(rendezVous.heureFin, '%H:%i') as heureFin"), 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix', 'service.nomService')
                     ->get();
                 if ($reservations->count() > 0) {
                     return response()->json([
