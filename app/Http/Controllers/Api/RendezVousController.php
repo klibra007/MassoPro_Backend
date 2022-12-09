@@ -512,6 +512,8 @@ class RendezVousController extends Controller
                     ->where('rendezVous.idClient', $request->idClient)
                     ->where('rendezVous.etat', 1)
                     ->select('rendezVous.*', DB::raw("DATE_FORMAT(rendezVous.heureDebut, '%H:%i') as heureDebut"), DB::raw("DATE_FORMAT(rendezVous.heureFin, '%H:%i') as heureFin"), 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix', 'service.nomService')
+                    ->orderBy('rendezVous.date', 'asc')
+                    ->orderBy('rendezVous.heureDebut', 'asc')
                     ->get();
                 if ($reservations->count() > 0) {
                     return response()->json([
