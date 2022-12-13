@@ -18,7 +18,20 @@ class ClientController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $client = Client::join('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
+            ->select('client.id', 'client.estActif', 'utilisateur.prenom', 'utilisateur.nom', 'utilisateur.courriel')
+            ->get();
+            return response()->json([
+                'status' => true,
+                'clients' => $client
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
