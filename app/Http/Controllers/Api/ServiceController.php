@@ -15,8 +15,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::where('estActif', 1)
-            ->select('id', 'nomService', 'description')
+        $services = Service::select('id', 'nomService', 'description', 'estActif')
             ->get();
         return response()->json($services);
     }
