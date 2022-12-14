@@ -22,13 +22,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ->only (permet de spécifier les méthodes autorisées par cette route qui se trouve dans la classe controller correspondante)
-Route::apiResource('services', ServiceController::class)->only([
+/*Route::apiResource('services', ServiceController::class)->only([
     'index', 'show'
-]);
+]);*/
 // Fonctionnalités temporaires, seront à transformer pour utiliser le package sanctum de laravel lors du srpint 2
 Route::post('/auth/login', [AuthController::class, 'loginUser']);
 Route::post('/auth/register', [AuthController::class, 'createUser']);
 //
+Route::middleware('api')->group(function () {
+    Route::get('services', [ServiceController::class, 'index']);
+    Route::post('services', [ServiceController::class, 'store']); //->middleware('auth:sanctum');
+});
 Route::apiResource('durees', DureeController::class);
 Route::apiResource('servicespersonnels', ServicePersonnelController::class);
 Route::apiResource('rendezvous', RendezVousController::class); //->middleware('auth:sanctum');
