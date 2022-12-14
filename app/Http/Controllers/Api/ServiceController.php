@@ -79,8 +79,28 @@ class ServiceController extends Controller
     //public function show(Service $service)
     public function show($id)
     {
-        $service = Service::find($id);
-        return response()->json($service);
+        try {
+            if (Service::where('id', $id)->exists()) {
+
+                $service = Service::where('id', $id)
+                    ->select('id', 'nomService', 'description', 'estActif', 'idAdministrateur')
+                    ->first();
+                return response()->json([
+                    'status' => true,
+                    'service' => $service
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ce service n\'existe pas.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }     
     }
 
     /**

@@ -31,6 +31,7 @@ Route::post('/auth/register', [AuthController::class, 'createUser']);
 //
 Route::middleware('api')->group(function () {
     Route::get('services', [ServiceController::class, 'index']);
+    Route::get('services/{id}', [ServiceController::class, 'show']); //->middleware('auth:sanctum');
     Route::post('services', [ServiceController::class, 'store']); //->middleware('auth:sanctum');
     Route::put('services/{id}', [ServiceController::class, 'update']); //->middleware('auth:sanctum');
 });
