@@ -101,9 +101,34 @@ class ServiceController extends Controller
      * @param  \App\Models\Service  $service
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Service $service)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            if (Service::where('id', $id)->exists()) {
+
+                $service = Service::find($id);
+
+                if ($request->nomService != null) $service->nomService = $request->nomService;
+                if ($request->description != null) $service->description = $request->description;
+
+                $service->save();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Modification effectuée avec succès.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ce service n\'existe pas.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
