@@ -75,7 +75,7 @@ class PersonnelController extends Controller
     {
         try {
 
-            if (Personnel::find($id)->exists()) {
+            if (Personnel::where('id', $id)->exists()) {
                 //Validated
                 $validatePersonnel = Validator::make(
                     $request->all(),
