@@ -64,7 +64,7 @@ class ClientController extends Controller
     public function show($id)
     {
         try {
-            if (Client::find($id)->exists()) {
+            if (Client::where('id', $id)->exists()) {
 
                 $client = Client::join('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
                     ->where('client.id', $id)
@@ -116,7 +116,7 @@ class ClientController extends Controller
     {
         try {
 
-            if (Client::find($id)->exists()) {
+            if (Client::where('id', $id)->exists()) {
                 //Validated
                 $validateClient = Validator::make(
                     $request->all(),
