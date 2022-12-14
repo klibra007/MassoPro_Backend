@@ -78,7 +78,7 @@ class ClientController extends Controller
                 }
                 return response()->json([
                     'status' => true,
-                    $client
+                    'client' => $client
                 ], 200);
             } else {
                 return response()->json([
