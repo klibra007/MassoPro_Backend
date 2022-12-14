@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\RendezVous;
 use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -20,8 +21,8 @@ class ClientController extends Controller
     {
         try {
             $client = Client::join('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
-            ->select('client.id', 'client.estActif', 'utilisateur.prenom', 'utilisateur.nom', 'utilisateur.courriel')
-            ->get();
+                ->select('client.id', 'client.estActif', 'utilisateur.prenom', 'utilisateur.nom', 'utilisateur.courriel')
+                ->get();
             return response()->json([
                 'status' => true,
                 'clients' => $client
@@ -175,8 +176,29 @@ class ClientController extends Controller
      * @param  \App\Models\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Client $client)
+    public function destroy($id)
     {
-        //
+        try {
+            if (Client::where('id', $id)->exists()) {
+                // Désactivation des enregistrements dans la table rendezVous concernés par ce client
+                RendezVous::where('idClient', $id)->update(array('etat' => 0));
+                // Désactivation du client
+                Client::where('id', $id)->update(array('estActif' => 0));
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Le client et les rendez-vous associés ont été désactivés.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ce client n\'existe pas.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }
