@@ -118,6 +118,8 @@ class ClientController extends Controller
         try {
 
             if (Client::where('id', $id)->exists()) {
+                $client = Client::find($id);
+                $utilisateur = Utilisateur::find($client->idUtilisateur);
                 //Validated
                 $validateClient = Validator::make(
                     $request->all(),
@@ -126,20 +128,12 @@ class ClientController extends Controller
                     ]
                 );
 
-                if ($validateClient->fails()) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'validation error',
-                        'errors' => $validateClient->errors()
-                    ], 401);
+                if (!$validateClient->fails()) {
+                    if ($request->courriel != null) $utilisateur->courriel = $request->courriel;
                 }
-
-                $client = Client::find($id);
-                $utilisateur = Utilisateur::find($client->idUtilisateur);
 
                 if ($request->nom != null) $utilisateur->nom = $request->nom;
                 if ($request->prenom != null) $utilisateur->prenom = $request->prenom;
-                if ($request->courriel != null) $utilisateur->courriel = $request->courriel;
                 // À remettre lorsque le bug sur le hash aura été résolu
                 if ($request->motDePasse != null) $utilisateur->motDePasse = Hash::make($request->motDePasse);
                 //if ($request->motDePasse != null) $utilisateur->motDePasse = $request->motDePasse;
