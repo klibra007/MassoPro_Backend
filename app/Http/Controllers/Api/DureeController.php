@@ -38,7 +38,34 @@ class DureeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            if ($request->duree != null && $request->prix != null) {
+                if (Duree::create([
+                    'duree' => $request->duree,
+                    'prix' => $request->prix
+                ])) {
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Durée créée avec succès.'
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Un problème est survenu lors de l\'enregistrement dans la base de données.'
+                    ], 401);
+                }
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tous les champs requis ne sont pas complets.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
