@@ -100,9 +100,34 @@ class DureeController extends Controller
      * @param  \App\Models\Duree  $duree
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Duree $duree)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            if (Duree::where('id', $id)->exists()) {
+
+                $duree = Duree::find($id);
+
+                if ($request->duree != null) $duree->duree = $request->duree;
+                if ($request->prix != null) $duree->prix = $request->prix;
+
+                $duree->save();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Modification effectuée avec succès.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Cette durée n\'existe pas.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
