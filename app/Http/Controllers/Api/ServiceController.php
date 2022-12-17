@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\RendezVous;
 use App\Models\Service;
 use Illuminate\Http\Request;
 
@@ -100,7 +101,7 @@ class ServiceController extends Controller
                 'status' => false,
                 'message' => $th->getMessage()
             ], 500);
-        }     
+        }
     }
 
     /**
@@ -157,8 +158,29 @@ class ServiceController extends Controller
      * @param  \App\Models\Service  $service
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Service $service)
+    public function destroy($id)
     {
-        //
+        try {
+            if (Service::where('id', $id)->exists()) {
+                // Désactivation des enregistrements dans la table rendezVous concernés par ce service
+                RendezVous::where('idService', $id)->update(array('etat' => 0));
+                // Désactivation du service
+                Service::where('id', $id)->update(array('estActif' => 0));
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Le service et les rendez-vous associés ont été désactivés.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ce service n\'existe pas.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }

@@ -34,6 +34,7 @@ Route::middleware('api')->group(function () {
     Route::get('services/{id}', [ServiceController::class, 'show']); //->middleware('auth:sanctum');
     Route::post('services', [ServiceController::class, 'store']); //->middleware('auth:sanctum');
     Route::put('services/{id}', [ServiceController::class, 'update']); //->middleware('auth:sanctum');
+    Route::delete('services/{id}', [ServiceController::class, 'destroy']); //->middleware('auth:sanctum');
 });
 Route::apiResource('durees', DureeController::class);
 Route::apiResource('servicespersonnels', ServicePersonnelController::class);
