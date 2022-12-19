@@ -41,20 +41,27 @@ class ServiceController extends Controller
     {
         try {
             if ($request->nomService != null && $request->description != null && $request->idAdministrateur != null) {
-                if (Service::create([
-                    'nomService' => $request->nomService,
-                    'description' => $request->description,
-                    'estActif' => '1',
-                    'idAdministrateur' => $request->idAdministrateur
-                ])) {
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Service créé avec succès.'
-                    ], 200);
+                if (!Service::where('nomService', $request->nomService)->exists()) {
+                    if (Service::create([
+                        'nomService' => $request->nomService,
+                        'description' => $request->description,
+                        'estActif' => '1',
+                        'idAdministrateur' => $request->idAdministrateur
+                    ])) {
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Service créé avec succès.'
+                        ], 200);
+                    } else {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Un problème est survenu lors de l\'enregistrement dans la base de données.'
+                        ], 401);
+                    }
                 } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Un problème est survenu lors de l\'enregistrement dans la base de données.'
+                        'message' => 'Le nom de ce service existe déjà'
                     ], 401);
                 }
             } else {
@@ -129,8 +136,11 @@ class ServiceController extends Controller
 
                 $service = Service::find($id);
 
-                if ($request->nomService != null) $service->nomService = $request->nomService;
+                if ($request->nomService != null) {
+                    if (!Service::where('id', $id)->where('nomService', $request->nomService)->exists()) $service->nomService = $request->nomService;
+                }
                 if ($request->description != null) $service->description = $request->description;
+                if ($request->estActif != null) $service->estActif = $request->estActif;
 
                 $service->save();
 
