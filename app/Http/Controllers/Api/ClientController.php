@@ -87,7 +87,7 @@ class ClientController extends Controller
 
             $client = Client::create([
                 'estActif' => '1',
-                'notes' => '',
+                'notes' => $request->notes,
                 'dateDeNaissance' => $request->dateDeNaissance,
                 'numeroAssuranceMaladie' => $request->numeroAssuranceMaladie,
                 'contactParSMS' => $request->contactParSMS,
@@ -206,6 +206,9 @@ class ClientController extends Controller
 
                 $utilisateur->save();
 
+                if ($request->notes != null) $client->notes = $request->notes;
+                if ($request->dateDeNaissance != null) $client->dateDeNaissance = $request->dateDeNaissance;
+                if ($request->numeroAssuranceMaladie != null) $client->numeroAssuranceMaladie = $request->numeroAssuranceMaladie;
                 if ($request->contactParSMS != null) $client->contactParSMS = $request->contactParSMS;
                 if ($request->contactParCourriel != null) $client->contactParCourriel = $request->contactParCourriel;
 
