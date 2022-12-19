@@ -53,7 +53,63 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            //Validated
+            $validateUser = Validator::make(
+                $request->all(),
+                [
+                    'prenom' => 'required',
+                    'nom' => 'required',
+                    'courriel' => 'required|email|unique:utilisateur,courriel',
+                    'motDePasse' => 'required',
+                    'telephone' => 'required'
+                ]
+            );
+
+            if ($validateUser->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validateUser->errors()
+                ], 401);
+            }
+
+            $utilisateur = Utilisateur::create([
+                'nom' => $request->nom,
+                'prenom' => $request->prenom,
+                'courriel' => $request->courriel,
+                //'motDePasse' => $request->motDePasse, //Hash::make($request->motDePasse),
+                'motDePasse' => Hash::make($request->motDePasse),
+                'telephone' => $request->telephone
+            ]);
+            // Récupération de l'id de l'utilisateur qui vient d'être inséré
+            $idUtilisateur = $utilisateur->id;
+
+            $client = Client::create([
+                'estActif' => '1',
+                'notes' => '',
+                'dateDeNaissance' => $request->dateDeNaissance,
+                'numeroAssuranceMaladie' => $request->numeroAssuranceMaladie,
+                'contactParSMS' => $request->contactParSMS,
+                'contactParCourriel' => $request->contactParCourriel,
+                'idUtilisateur' => $idUtilisateur,
+                'idPersonnel' => $request->idPersonnel
+            ]);
+            // Récupération de l'id du client qui vient d'être inséré
+            $idClient = $client->id;
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Client créé avec succes.',
+                'idClient' => $idClient
+                //'token' => $utilisateur->createToken("API TOKEN")->plainTextToken
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
