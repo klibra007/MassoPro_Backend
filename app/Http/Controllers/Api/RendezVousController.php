@@ -117,7 +117,7 @@ class RendezVousController extends Controller
                         $slot_time = $start_time->copy()->addMinutes($serviceDuration);
 
                         if ($slot_time->lessThanOrEqualTo($end_time)) {
-                            $tranchesHorairesFinales[] =  $start_time->format('H:i') . ' - ' . $slot_time->format('H:i');
+                            $tranchesHorairesFinales[] = array('heureDebut' => $start_time->format('H:i'), 'heureFin' => $slot_time->format('H:i'));
                             $start_time = $slot_time->addMinutes($serviceBufferDuration);
                             continue;
                         }
