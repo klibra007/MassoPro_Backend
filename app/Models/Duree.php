@@ -18,6 +18,7 @@ class Duree extends Model
      */
     protected $fillable = [
         'duree',
-        'prix'
+        'prix',
+        'estActif'
     ];
 }

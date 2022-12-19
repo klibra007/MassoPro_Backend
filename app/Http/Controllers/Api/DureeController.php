@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Duree;
+use App\Models\RendezVous;
 use Illuminate\Http\Request;
 
 class DureeController extends Controller
@@ -15,7 +16,7 @@ class DureeController extends Controller
      */
     public function index()
     {
-        $durees = Duree::select('id', 'duree', 'prix')
+        $durees = Duree::select('id', 'duree', 'prix', 'estActif')
             ->get();
         return response()->json($durees);
     }
@@ -42,7 +43,8 @@ class DureeController extends Controller
             if ($request->duree != null && $request->prix != null) {
                 if (Duree::create([
                     'duree' => $request->duree,
-                    'prix' => $request->prix
+                    'prix' => $request->prix,
+                    'estActif' => 1
                 ])) {
                     return response()->json([
                         'status' => true,
@@ -77,7 +79,7 @@ class DureeController extends Controller
     public function show($id)
     {
         $durees = Duree::where('id', '=', $id)
-            ->select('id', 'duree', 'prix')
+            ->select('id', 'duree', 'prix', 'estActif')
             ->first();
         return response()->json($durees);
     }
@@ -109,6 +111,7 @@ class DureeController extends Controller
 
                 if ($request->duree != null) $duree->duree = $request->duree;
                 if ($request->prix != null) $duree->prix = $request->prix;
+                if ($request->estActif != null) $duree->estActif = $request->estActif;
 
                 $duree->save();
 
@@ -136,8 +139,29 @@ class DureeController extends Controller
      * @param  \App\Models\Duree  $duree
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Duree $duree)
+    public function destroy($id)
     {
-        //
+        try {
+            if (Duree::where('id', $id)->exists()) {
+                // Désactivation des enregistrements dans la table rendezVous concernés par cette durée
+                RendezVous::where('idDuree', $id)->update(array('etat' => 0));
+                // Désactivation de la durée
+                Duree::where('id', $id)->update(array('estActif' => 0));
+                return response()->json([
+                    'status' => true,
+                    'message' => 'La durée et les rendez-vous associés ont été désactivés.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Cette durée n\'existe pas.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }
