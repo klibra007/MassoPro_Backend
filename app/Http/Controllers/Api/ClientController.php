@@ -125,7 +125,7 @@ class ClientController extends Controller
 
                 $client = Client::join('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
                     ->where('client.id', $id)
-                    ->select('utilisateur.prenom', 'utilisateur.nom', 'utilisateur.courriel', 'utilisateur.telephone', 'client.id AS idClient', 'client.estActif', 'client.dateDeNaissance', 'client.numeroAssuranceMaladie', 'client.contactParSMS', 'client.contactParCourriel')
+                    ->select('utilisateur.prenom', 'utilisateur.nom', 'utilisateur.courriel', 'utilisateur.telephone', 'client.id AS idClient', 'client.estActif', 'client.dateDeNaissance', 'client.numeroAssuranceMaladie', 'client.notes', 'client.contactParSMS', 'client.contactParCourriel')
                     ->first();
                 if (!$client->estActif) {
                     return response()->json([
