@@ -207,6 +207,7 @@ class ClientController extends Controller
                 $utilisateur->save();
 
                 if ($request->notes != null) $client->notes = $request->notes;
+                if ($request->estActif != null) $client->estActif = $request->estActif;
                 if ($request->dateDeNaissance != null) $client->dateDeNaissance = $request->dateDeNaissance;
                 if ($request->numeroAssuranceMaladie != null) $client->numeroAssuranceMaladie = $request->numeroAssuranceMaladie;
                 if ($request->contactParSMS != null) $client->contactParSMS = $request->contactParSMS;
