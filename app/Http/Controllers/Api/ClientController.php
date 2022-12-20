@@ -21,7 +21,7 @@ class ClientController extends Controller
     {
         try {
             $client = Client::join('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
-                ->select('client.id', 'client.estActif', 'utilisateur.prenom', 'utilisateur.nom', 'utilisateur.courriel')
+                ->select('client.id', 'client.estActif', 'client.notes', 'client.dateDeNaissance', 'client.numeroAssuranceMaladie', 'client.contactParSMS', 'client.contactParCourriel', 'utilisateur.prenom', 'utilisateur.nom', 'utilisateur.courriel', 'utilisateur.telephone')
                 ->get();
             return response()->json([
                 'status' => true,
