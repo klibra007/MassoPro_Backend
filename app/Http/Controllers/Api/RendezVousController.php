@@ -45,30 +45,26 @@ class RendezVousController extends Controller
         // POST pour connaitre les disponibilités horaires selon une date, un service, un personnel et une durée précise
         if ($request->date != null && $request->idService != null && $request->idPersonnel != null && $request->idDuree != null && $request->heureDebut == null && $request->heureFin == null) {
             /*
-            * Vérification des horaires disponibles du personnel
+            * Vérification des horaires disponibles du personnel pour le service concerné
             */
-            $horaires = HoraireDeTravail::where('idPersonnel', '=', $request->idPersonnel)
-                ->where('jour', '=', date('w', strtotime($request->date)))
+            $horaires = HoraireDeTravail::join('service_personnel', 'horaireDeTravail.idPersonnel', 'service_personnel.idPersonnel')
+                ->where('horaireDeTravail.idPersonnel', $request->idPersonnel)
+                ->where('horaireDeTravail.jour', date('w', strtotime($request->date)))
+                ->where('service_personnel.idService', $request->idService)
                 ->get();
-            /*
-            * Pas de disponibilité pour cette journée, retourne un json vide
-            * $horaires[0] car peu importe le nombre de plage horaire pour cette journée, ce sera toujours le même numéro de jour
-            */
+
             if ($horaires->count() > 0) {
-                if ($horaires[0]->jour != date('w', strtotime($request->date))) {
-                    return response()->json([]);
-                }
                 /*
-            * Recherche de la durée selon la variable idDuree
-            */
+                * Recherche de la durée selon la variable idDuree
+                */
                 $duree = Duree::where('id', '=', $request->idDuree)
                     ->select('duree')
                     ->first();
                 /*
-            * Nouvelle approche avec Carbon, bug ici si la plage horaire commence à la même heure qu'un horaire invalide...
-            * Bug trouvé lessThanOrEqualTo au lieu de lessThan
-            * Exemple pris là https://stackoverflow.com/questions/74068073/laravel-carbon-get-interval-slots-with-buffer-duration
-            */
+                * Nouvelle approche avec Carbon, bug ici si la plage horaire commence à la même heure qu'un horaire invalide...
+                * Bug trouvé lessThanOrEqualTo au lieu de lessThan
+                * Exemple pris là https://stackoverflow.com/questions/74068073/laravel-carbon-get-interval-slots-with-buffer-duration
+                */
                 $serviceDuration = $duree->duree; // Durée
                 $serviceBufferDuration = 0; // S'il devait y avoir un temps d'arrêt entre chaque plage horaire
 
@@ -126,14 +122,13 @@ class RendezVousController extends Controller
                     }
                 }
                 return response()->json($tranchesHorairesFinales, 200);
-
             } else {
                 return response()->json([
                     'status' => false,
                     'message' => 'Aucune disponibilité'
                 ], 200);
             }
-        // POST avec le choix des horaires
+            // POST avec le choix des horaires
         } elseif ($request->heureDebut != null && $request->heureFin != null) {
             try {
                 //Validated
