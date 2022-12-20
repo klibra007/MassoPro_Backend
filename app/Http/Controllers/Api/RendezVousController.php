@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Duree;
 use App\Models\HoraireDeTravail;
+use App\Models\Personnel;
 use App\Models\RendezVous;
+use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,6 +46,21 @@ class RendezVousController extends Controller
     {
         // POST pour connaitre les disponibilités horaires selon une date, un service, un personnel et une durée précise
         if ($request->date != null && $request->idService != null && $request->idPersonnel != null && $request->idDuree != null && $request->heureDebut == null && $request->heureFin == null) {
+
+            if (!Service::where('id', $request->idService)->exists()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ce service n\'existe pas.'
+                ], 401);
+            }
+
+            if (!Personnel::where('id', $request->idPersonnel)->exists()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ce personnel n\'existe pas.'
+                ], 401);
+            }
+
             /*
             * Vérification des horaires disponibles du personnel pour le service concerné
             */
@@ -57,6 +74,13 @@ class RendezVousController extends Controller
                 /*
                 * Recherche de la durée selon la variable idDuree
                 */
+                if (!Duree::where('id', $request->idDuree)->exists()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Cette durée n\'existe pas.'
+                    ], 401);
+                }
+
                 $duree = Duree::where('id', '=', $request->idDuree)
                     ->select('duree')
                     ->first();
