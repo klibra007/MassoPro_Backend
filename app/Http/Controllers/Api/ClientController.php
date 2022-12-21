@@ -199,9 +199,17 @@ class ClientController extends Controller
                 if ($request->nom != null) $utilisateur->nom = $request->nom;
                 if ($request->prenom != null) $utilisateur->prenom = $request->prenom;
                 if ($request->courriel != null) $utilisateur->courriel = $request->courriel;
-                // À remettre lorsque le bug sur le hash aura été résolu
-                if ($request->motDePasse != null) $utilisateur->motDePasse = Hash::make($request->motDePasse);
-                //if ($request->motDePasse != null) $utilisateur->motDePasse = $request->motDePasse;
+                // Vérification sur le changement de mot de passe
+                if ($request->ancienMotDePasse != null) {
+                    if (!Utilisateur::where('courriel', $request->courriel)->where('motDePasse', Hash::make($request->ancienMotDePasse))->exists()) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Mauvais mot de passe.'
+                        ], 401);
+                    }
+                   $utilisateur->motDePasse = Hash::make($request->motDePasse);
+                }
+                //
                 if ($request->telephone != null) $utilisateur->telephone = $request->telephone;
 
                 $utilisateur->save();
