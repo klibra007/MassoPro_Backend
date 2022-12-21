@@ -207,7 +207,7 @@ class ClientController extends Controller
                             'message' => 'Mauvais mot de passe.'
                         ], 401);
                     }
-                   $utilisateur->motDePasse = Hash::make($request->motDePasse);
+                    $utilisateur->motDePasse = Hash::make($request->motDePasse);
                 }
                 //
                 if ($request->telephone != null) $utilisateur->telephone = $request->telephone;
