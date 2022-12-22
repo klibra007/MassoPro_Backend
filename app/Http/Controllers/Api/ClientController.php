@@ -203,7 +203,7 @@ class ClientController extends Controller
                 if ($request->motDePasse != null && $request->idPersonnel != null) $utilisateur->motDePasse = Hash::make($request->motDePasse);
                 // Vérification sur le changement de mot de passe lorsque c'est le client qui en fait la modification
                 if ($request->ancienMotDePasse != null && $request->idPersonnel == null) {
-                    if (!Utilisateur::where('courriel', $request->courriel)->where('motDePasse', Hash::make($request->ancienMotDePasse))->exists()) {
+                    if (!Hash::check($request->ancienMotDePasse, $utilisateur->motDePasse)) {
                         return response()->json([
                             'status' => false,
                             'message' => 'Mauvais mot de passe.'
