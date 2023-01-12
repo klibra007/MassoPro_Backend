@@ -10,4 +10,16 @@ class HoraireDeTravail extends Model
     use HasFactory;
 
     protected $table = "horaireDeTravail";
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'jour',
+        'idPersonnel',
+        'heureDebut',
+        'heureFin'
+    ];
 }

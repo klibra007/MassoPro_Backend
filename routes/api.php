@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\DureeController;
+use App\Http\Controllers\Api\HoraireDeTravailController;
 use App\Http\Controllers\Api\PersonnelController;
 use App\Http\Controllers\Api\RendezVousController;
 use App\Http\Controllers\Api\ServiceController;
@@ -41,6 +42,7 @@ Route::apiResource('servicespersonnels', ServicePersonnelController::class);
 Route::apiResource('rendezvous', RendezVousController::class); //->middleware('auth:sanctum');
 Route::apiResource('client', ClientController::class); //->middleware('auth:sanctum');
 Route::apiResource('personnel', PersonnelController::class); //->middleware('auth:sanctum');
+Route::apiResource('horairedetravail', HoraireDeTravailController::class); //->middleware('auth:sanctum');
 
 //using middleware AuthController
 /*Route::group(['middleware' => ['auth:sanctum']], function () {
