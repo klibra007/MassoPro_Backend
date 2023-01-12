@@ -220,6 +220,7 @@ class RendezVousController extends Controller
             }
         } else {
             try {
+                if ($request->idClient != null) {
                 $reservations = RendezVous::join('personnel', 'rendezVous.idPersonnel', 'personnel.id')
                     ->join('utilisateur', 'personnel.idUtilisateur', 'utilisateur.id')
                     ->join('service', 'rendezVous.idService', 'service.id')
@@ -230,15 +231,28 @@ class RendezVousController extends Controller
                     ->orderBy('rendezVous.date', 'asc')
                     ->orderBy('rendezVous.heureDebut', 'asc')
                     ->get();
+                } else {
+                    $reservations = RendezVous::join('client', 'rendezVous.idClient', 'client.id')
+                    ->join('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
+                    ->join('service', 'rendezVous.idService', 'service.id')
+                    ->join('duree', 'rendezVous.idDuree', 'duree.id')
+                    ->where('rendezVous.idPersonnel', $request->idPersonnel)
+                    ->where('rendezVous.etat', 1)
+                    ->select('rendezVous.*', DB::raw("DATE_FORMAT(rendezVous.heureDebut, '%H:%i') as heureDebut"), DB::raw("DATE_FORMAT(rendezVous.heureFin, '%H:%i') as heureFin"), 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix', 'service.nomService')
+                    ->orderBy('rendezVous.date', 'asc')
+                    ->orderBy('rendezVous.heureDebut', 'asc')
+                    ->get();                }
                 if ($reservations->count() > 0) {
                     return response()->json([
                         'status' => true,
                         'reservations' => $reservations
                     ], 200);
                 } else {
+                    $message = '';
+                    ($request->idClient != null)?$message = 'Aucune réservation pour ce client':$message = 'Aucune réservation pour ce personnel';
                     return response()->json([
                         'status' => false,
-                        'message' => 'Aucune réservation pour ce client'
+                        'message' => $message
                     ], 200);
                 }
             } catch (\Throwable $th) {
