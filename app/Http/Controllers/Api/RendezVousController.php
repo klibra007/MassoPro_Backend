@@ -221,32 +221,26 @@ class RendezVousController extends Controller
         } else {
             try {
                 if ($request->idClient != null) {
-                    $reservations = RendezVous::join('personnel', 'rendezVous.idPersonnel', 'personnel.id')
+                    $rendezVous = RendezVous::join('personnel', 'rendezVous.idPersonnel', 'personnel.id')
                         ->join('utilisateur', 'personnel.idUtilisateur', 'utilisateur.id')
-                        ->join('service', 'rendezVous.idService', 'service.id')
-                        ->join('duree', 'rendezVous.idDuree', 'duree.id')
-                        ->where('rendezVous.idClient', $request->idClient)
-                        ->where('rendezVous.etat', 1)
-                        ->select('rendezVous.*', DB::raw("DATE_FORMAT(rendezVous.heureDebut, '%H:%i') as heureDebut"), DB::raw("DATE_FORMAT(rendezVous.heureFin, '%H:%i') as heureFin"), 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix', 'service.nomService')
-                        ->orderBy('rendezVous.date', 'asc')
-                        ->orderBy('rendezVous.heureDebut', 'asc')
-                        ->get();
+                        ->where('rendezVous.idClient', $request->idClient);
                 } else {
-                    $reservations = RendezVous::join('client', 'rendezVous.idClient', 'client.id')
+                    $rendezVous = RendezVous::join('client', 'rendezVous.idClient', 'client.id')
                         ->join('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
-                        ->join('service', 'rendezVous.idService', 'service.id')
-                        ->join('duree', 'rendezVous.idDuree', 'duree.id')
-                        ->where('rendezVous.idPersonnel', $request->idPersonnel)
-                        ->where('rendezVous.etat', 1)
-                        ->select('rendezVous.*', DB::raw("DATE_FORMAT(rendezVous.heureDebut, '%H:%i') as heureDebut"), DB::raw("DATE_FORMAT(rendezVous.heureFin, '%H:%i') as heureFin"), 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix', 'service.nomService')
-                        ->orderBy('rendezVous.date', 'asc')
-                        ->orderBy('rendezVous.heureDebut', 'asc')
-                        ->get();
+                        ->where('rendezVous.idPersonnel', $request->idPersonnel);
                 }
-                if ($reservations->count() > 0) {
+                $query = $rendezVous->join('duree', 'rendezVous.idDuree', 'duree.id')
+                    ->join('service', 'rendezVous.idService', 'service.id')
+                    ->where('rendezVous.etat', 1)
+                    ->select('rendezVous.*', DB::raw("DATE_FORMAT(rendezVous.heureDebut, '%H:%i') as heureDebut"), DB::raw("DATE_FORMAT(rendezVous.heureFin, '%H:%i') as heureFin"), 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix', 'service.nomService')
+                    ->orderBy('rendezVous.date', 'asc')
+                    ->orderBy('rendezVous.heureDebut', 'asc')
+                    ->get();
+
+                if ($query->count() > 0) {
                     return response()->json([
                         'status' => true,
-                        'reservations' => $reservations
+                        'reservations' => $query
                     ], 200);
                 } else {
                     $message = '';
