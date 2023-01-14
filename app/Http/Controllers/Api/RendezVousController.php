@@ -337,7 +337,7 @@ class RendezVousController extends Controller
                 return response()->json([
                     'status' => false,
                     'message' => 'Ce rendez-vous n\'existe pas.'
-                ], 401);
+                ], 200);
             }
         } catch (\Throwable $th) {
             return response()->json([
