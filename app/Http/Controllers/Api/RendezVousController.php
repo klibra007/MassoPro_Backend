@@ -323,12 +323,12 @@ class RendezVousController extends Controller
      * @param  \App\Models\RendezVous  $rendezVous
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy($id, Request $request)
     {
         try {
-            if (RendezVous::where('id', $request->id)->exists() && Personnel::where('id', $request->idPersonnel)->exists()) {
+            if (RendezVous::where('id', $id)->where('etat', '1')->exists() && Personnel::where('id', $request->idPersonnel)->exists()) {
                 // Désactivation de l'enregistrement dans la table rendezVous
-                RendezVous::where('id', $request->id)->update(array('etat' => 0));
+                RendezVous::where('id', $id)->update(array('etat' => 0));
                 return response()->json([
                     'status' => true,
                     'message' => 'Le rendez-vous a été désactivé.'
