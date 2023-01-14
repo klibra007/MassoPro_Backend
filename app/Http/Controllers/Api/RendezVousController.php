@@ -326,7 +326,7 @@ class RendezVousController extends Controller
     public function destroy($id, Request $request)
     {
         try {
-            if (RendezVous::where('id', $id)->where('etat', '1')->exists() && Personnel::where('id', $request->idPersonnel)->exists()) {
+            if (RendezVous::where('id', $id)->where('etat', '1')->exists()) {
                 // Désactivation de l'enregistrement dans la table rendezVous
                 RendezVous::where('id', $id)->update(array('etat' => 0));
                 return response()->json([
