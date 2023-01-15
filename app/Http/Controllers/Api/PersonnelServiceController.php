@@ -55,17 +55,17 @@ class PersonnelServiceController extends Controller
                     ->where('service.estActif', 1)
                     ->select('service.id', 'service.nomService')
                     ->get();
-                    if ($services->count() > 0) {
-                        return response()->json([
-                            'status' => true,
-                            'services' => $services
-                        ], 200);
-                    } else {
-                        return response()->json([
-                            'status' => false,
-                            'message' => 'Aucun service pour ce personnel'
-                        ], 200);
-                    }                    
+                if ($services->count() > 0) {
+                    return response()->json([
+                        'status' => true,
+                        'services' => $services
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Aucun service pour ce personnel'
+                    ], 200);
+                }
                 return response()->json($services);
             } else {
                 return response()->json([
@@ -78,7 +78,8 @@ class PersonnelServiceController extends Controller
                 'status' => false,
                 'message' => $th->getMessage()
             ], 500);
-        }    }
+        }
+    }
 
     /**
      * Show the form for editing the specified resource.
