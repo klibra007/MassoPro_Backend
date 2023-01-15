@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\PersonnelController;
 use App\Http\Controllers\Api\RendezVousController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\ServicePersonnelController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\PersonnelServiceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,6 +39,7 @@ Route::middleware('api')->group(function () {
 });
 Route::apiResource('durees', DureeController::class);
 Route::apiResource('servicespersonnels', ServicePersonnelController::class);
+Route::apiResource('personnelservices', PersonnelServiceController::class);
 Route::apiResource('rendezvous', RendezVousController::class); //->middleware('auth:sanctum');
 Route::apiResource('client', ClientController::class); //->middleware('auth:sanctum');
 Route::apiResource('personnel', PersonnelController::class); //->middleware('auth:sanctum');
