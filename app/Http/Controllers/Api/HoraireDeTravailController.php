@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\HoraireDeTravail;
+use App\Models\Personnel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class HoraireDeTravailController extends Controller
@@ -150,10 +152,39 @@ class HoraireDeTravailController extends Controller
      * @param  \App\Models\HoraireDeTravail  $horaireDeTravail
      * @return \Illuminate\Http\Response
      */
-    public function show(HoraireDeTravail $horaireDeTravail)
+    public function show($idPersonnel)
     {
-        //
-    }
+        try {
+            if ($idPersonnel != null && (Personnel::where('id', $idPersonnel)->exists())) {
+                $horaires = HoraireDeTravail::join('personnel', 'personnel.id', 'horaireDeTravail.idPersonnel')
+                    ->where('horaireDeTravail.idPersonnel', $idPersonnel)
+                    ->where('personnel.estActif', 1)
+                    ->select(DB::raw("CONCAT('[', horaireDeTravail.jour, ']') as daysOfWeeks"), 'horaireDeTravail.heureDebut AS startTime', 'horaireDeTravail.heureFin AS endTime')
+                    ->get();
+                if ($horaires->count() > 0) {
+                    return response()->json([
+                        'status' => true,
+                        'horairesDeTravail' => $horaires
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Aucun horaire pour ce personnel'
+                    ], 200);
+                }
+                return response()->json($horaires);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ce personnel n\'existe pas.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }    }
 
     /**
      * Show the form for editing the specified resource.
