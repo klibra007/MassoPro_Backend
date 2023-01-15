@@ -225,12 +225,12 @@ class RendezVousController extends Controller
                         ->join('utilisateur', 'personnel.idUtilisateur', 'utilisateur.id')
                         ->where('rendezVous.idClient', $request->idClient);
                 } else {
-                    $rendezVous = RendezVous::join('client', 'rendezVous.idClient', 'client.id')
-                        ->join('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
+                    $rendezVous = RendezVous::leftJoin('client', 'rendezVous.idClient', 'client.id')
+                        ->leftJoin('utilisateur', 'client.idUtilisateur', 'utilisateur.id')
                         ->where('rendezVous.idPersonnel', $request->idPersonnel);
                 }
-                $query = $rendezVous->join('duree', 'rendezVous.idDuree', 'duree.id')
-                    ->join('service', 'rendezVous.idService', 'service.id')
+                $query = $rendezVous->leftJoin('duree', 'rendezVous.idDuree', 'duree.id')
+                    ->leftJoin('service', 'rendezVous.idService', 'service.id')
                     ->where('rendezVous.etat', 1)
                     ->select('rendezVous.*', DB::raw("DATE_FORMAT(rendezVous.heureDebut, '%H:%i') as heureDebut"), DB::raw("DATE_FORMAT(rendezVous.heureFin, '%H:%i') as heureFin"), 'utilisateur.prenom', 'utilisateur.nom', 'duree.duree', 'duree.prix', 'service.nomService')
                     ->orderBy('rendezVous.date', 'asc')
