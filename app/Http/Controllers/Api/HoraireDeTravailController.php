@@ -159,7 +159,7 @@ class HoraireDeTravailController extends Controller
                 $horaires = HoraireDeTravail::join('personnel', 'personnel.id', 'horaireDeTravail.idPersonnel')
                     ->where('horaireDeTravail.idPersonnel', $idPersonnel)
                     ->where('personnel.estActif', 1)
-                    ->select(DB::raw("CONCAT('[', horaireDeTravail.jour, ']') as daysOfWeeks"), 'horaireDeTravail.heureDebut AS startTime', 'horaireDeTravail.heureFin AS endTime')
+                    ->select(DB::raw("CONCAT('[', horaireDeTravail.jour, ']') as daysOfWeek"), 'horaireDeTravail.heureDebut AS startTime', 'horaireDeTravail.heureFin AS endTime')
                     ->get();
                 if ($horaires->count() > 0) {
                     return response()->json([
