@@ -59,78 +59,87 @@ class HoraireDeTravailController extends Controller
                     ], 401);
                 }
 
-                // Personnel qui n'a pas d'horaire de travail présent dans la base de données
-                if (!HoraireDeTravail::where('jour', $request->jour)
-                    ->where('idPersonnel', $request->idPersonnel)
-                    ->exists()) {
-                    if (HoraireDeTravail::create([
-                        'jour' => $request->jour,
-                        'heureDebut' => $request->heureDebut,
-                        'heureFin' => $request->heureFin,
-                        'idPersonnel' => $request->idPersonnel
-                    ])) {
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Horaire de travail créé avec succès.'
-                        ], 200);
-                    } else {
-                        return response()->json([
-                            'status' => false,
-                            'message' => 'Un problème est survenu lors de l\'enregistrement dans la base de données.'
-                        ], 401);
-                    }
-                    // Personnel qui a déjà au moins une plage horaire définie dans la base de données
-                } else {
-                    // Recherche des horaires de travail déjà présentes dans la base de données
-                    $invalidWorkSchedule = [];
-                    $horaireDeTravail = HoraireDeTravail::where('jour', $request->jour)
-                        ->where('idPersonnel', '=', $request->idPersonnel)
-                        ->select('heureDebut', 'heureFin')
-                        ->get();
-                    foreach ($horaireDeTravail as $hdt) {
-                        array_push($invalidWorkSchedule, substr($hdt->heureDebut, 0, 5) . ' - ' . substr($hdt->heureFin, 0, 5));
-                    }
-                    $startWorking = substr($request->heureDebut, 0, 5);
-                    $endWorking = substr($request->heureFin, 0, 5);
+                $jours = explode(',', $request->jour);
+                $status = true;
+                $message = '';
+                foreach ($jours as $jour) {
+                    if ($status) {
+                        // Personnel qui n'a pas d'horaire de travail présent dans la base de données
+                        if (!HoraireDeTravail::where('jour', $jour)
+                            ->where('idPersonnel', $request->idPersonnel)
+                            ->exists()) {
 
-                    // Parse hh:mm en date complète
-                    $start_time = Carbon::parse($startWorking);
-                    $end_time = Carbon::parse($endWorking);
-
-                    $invalid = false;
-
-                    foreach ($invalidWorkSchedule as $interval) {
-                        $invalidTime = explode(' - ', $interval);
-                        $invalidTime[0] = Carbon::parse($invalidTime[0]);
-                        $invalidTime[1] = Carbon::parse($invalidTime[1]);
-
-                        //
-                        if ($start_time->lessThanOrEqualTo($invalidTime[0]) && $end_time->greaterThanOrEqualTo($invalidTime[1]) && !$invalid) $invalid = true;
-                        if ($start_time->between($invalidTime[0]->copy()->addMinute(1), $invalidTime[1]->copy()->subMinute(1)) || $end_time->between($invalidTime[0]->copy()->addMinute(1), $invalidTime[1]->copy()->subMinute(1)) && !$invalid) $invalid = true;
-                    }
-                    if (!$invalid) {
-                        if (HoraireDeTravail::create([
-                            'jour' => $request->jour,
-                            'heureDebut' => $request->heureDebut,
-                            'heureFin' => $request->heureFin,
-                            'idPersonnel' => $request->idPersonnel
-                        ])) {
-                            return response()->json([
-                                'status' => true,
-                                'message' => 'Horaire de travail créé avec succès.'
-                            ], 200);
+                            if (HoraireDeTravail::create([
+                                'jour' => $jour,
+                                'heureDebut' => $request->heureDebut,
+                                'heureFin' => $request->heureFin,
+                                'idPersonnel' => $request->idPersonnel
+                            ])) {
+                                $status = true;
+                                $message = 'Horaire de travail créé avec succès.';
+                            } else {
+                                $status = false;
+                                $message = 'Un problème est survenu lors de l\'enregistrement dans la base de données.';
+                            }
+                            // Personnel qui a déjà au moins une plage horaire définie dans la base de données
                         } else {
-                            return response()->json([
-                                'status' => false,
-                                'message' => 'Un problème est survenu lors de l\'enregistrement dans la base de données.'
-                            ], 401);
+                            // Recherche des horaires de travail déjà présentes dans la base de données
+                            $invalidWorkSchedule = [];
+                            $horaireDeTravail = HoraireDeTravail::where('jour', $jour)
+                                ->where('idPersonnel', '=', $request->idPersonnel)
+                                ->select('heureDebut', 'heureFin')
+                                ->get();
+                            foreach ($horaireDeTravail as $hdt) {
+                                array_push($invalidWorkSchedule, substr($hdt->heureDebut, 0, 5) . ' - ' . substr($hdt->heureFin, 0, 5));
+                            }
+                            $startWorking = substr($request->heureDebut, 0, 5);
+                            $endWorking = substr($request->heureFin, 0, 5);
+
+                            // Parse hh:mm en date complète
+                            $start_time = Carbon::parse($startWorking);
+                            $end_time = Carbon::parse($endWorking);
+
+                            $invalid = false;
+
+                            foreach ($invalidWorkSchedule as $interval) {
+                                $invalidTime = explode(' - ', $interval);
+                                $invalidTime[0] = Carbon::parse($invalidTime[0]);
+                                $invalidTime[1] = Carbon::parse($invalidTime[1]);
+
+                                //
+                                if ($start_time->lessThanOrEqualTo($invalidTime[0]) && $end_time->greaterThanOrEqualTo($invalidTime[1]) && !$invalid) $invalid = true;
+                                if ($start_time->between($invalidTime[0]->copy()->addMinute(1), $invalidTime[1]->copy()->subMinute(1)) || $end_time->between($invalidTime[0]->copy()->addMinute(1), $invalidTime[1]->copy()->subMinute(1)) && !$invalid) $invalid = true;
+                            }
+                            if (!$invalid) {
+                                if (HoraireDeTravail::create([
+                                    'jour' => $jour,
+                                    'heureDebut' => $request->heureDebut,
+                                    'heureFin' => $request->heureFin,
+                                    'idPersonnel' => $request->idPersonnel
+                                ])) {
+                                    $status = true;
+                                    $message = 'Horaire de travail créé avec succès.';
+                                } else {
+                                    $status = false;
+                                    $message = 'Un problème est survenu lors de l\'enregistrement dans la base de données.';
+                                }
+                            } else {
+                                $status = false;
+                                $message = 'L\'horaire demandé pour ce personnel entre en conflit avec un horaire existant.';
+                            }
                         }
-                    } else {
-                        return response()->json([
-                            'status' => false,
-                            'message' => 'L\'horaire demandé pour ce personnel entre en conflit avec un horaire existant.'
-                        ], 401);
                     }
+                }
+                if ($status) {
+                    return response()->json([
+                        'status' => $status,
+                        'message' => $message
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => $status,
+                        'message' => $message
+                    ], 401);
                 }
             } else {
                 return response()->json([
@@ -184,7 +193,8 @@ class HoraireDeTravailController extends Controller
                 'status' => false,
                 'message' => $th->getMessage()
             ], 500);
-        }    }
+        }
+    }
 
     /**
      * Show the form for editing the specified resource.
