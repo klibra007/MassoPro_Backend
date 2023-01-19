@@ -312,9 +312,46 @@ class RendezVousController extends Controller
      * @param  \App\Models\RendezVous  $rendezVous
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, RendezVous $rendezVous)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            if ($request->date != null && $request->idService != null && $request->idPersonnel != null && $request->idDuree != null && $request->heureDebut != null && $request->heureFin != null) {
+                if (RendezVous::where('id', $id)->exists()) {
+
+                    $rendezVous = RendezVous::find($id);
+
+                    $rendezVous->date = $request->date;
+                    $rendezVous->idService = $request->idService;
+                    $rendezVous->idPersonnel = $request->idPersonnel;
+                    $rendezVous->idDuree = $request->idDuree;
+                    $rendezVous->heureDebut = $request->heureDebut;
+                    $rendezVous->heureFin = $request->heureFin;
+                    if ($request->idClient != null)  $rendezVous->idClient = $request->idClient;
+
+                    $rendezVous->save();
+
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Modification effectuée avec succès.'
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Ce rendez-vous n\'existe pas.'
+                    ], 401);
+                }
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tous les champs requis ne sont pas complets.'
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
